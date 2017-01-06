@@ -1,1 +1,2 @@
-# Lesson08-material
+# Lesson08 - Mastering Graphical user interface building in Android
+
