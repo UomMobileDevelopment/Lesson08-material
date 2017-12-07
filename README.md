@@ -805,5 +805,123 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 }
 ```
 
+### Task 9: Add official icons to app
 
+- download icons from [here](https://github.com/udacity/Sunshine-Version-2/tree/assets) and copy them in the app 
+
+- update launcher icon in AdnroidManifest.xml
+
+```
+<application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        ....
+        
+ ```
+
+- integrate weather app in forecast list and forecast detail screen
+
+```
+/**
+ * Helper method to provide the icon resource id according to the weather condition id returned
+ * by the OpenWeatherMap call.
+ * @param weatherId from OpenWeatherMap API response
+ * @return resource id for the corresponding icon. -1 if no relation is found.
+ */
+public static int getIconResourceForWeatherCondition(int weatherId) {
+    // Based on weather code data found at:
+    // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
+    if (weatherId >= 200 && weatherId <= 232) {
+        return R.drawable.ic_storm;
+    } else if (weatherId >= 300 && weatherId <= 321) {
+        return R.drawable.ic_light_rain;
+    } else if (weatherId >= 500 && weatherId <= 504) {
+        return R.drawable.ic_rain;
+    } else if (weatherId == 511) {
+        return R.drawable.ic_snow;
+    } else if (weatherId >= 520 && weatherId <= 531) {
+        return R.drawable.ic_rain;
+    } else if (weatherId >= 600 && weatherId <= 622) {
+        return R.drawable.ic_snow;
+    } else if (weatherId >= 701 && weatherId <= 761) {
+        return R.drawable.ic_fog;
+    } else if (weatherId == 761 || weatherId == 781) {
+        return R.drawable.ic_storm;
+    } else if (weatherId == 800) {
+        return R.drawable.ic_clear;
+    } else if (weatherId == 801) {
+        return R.drawable.ic_light_clouds;
+    } else if (weatherId >= 802 && weatherId <= 804) {
+        return R.drawable.ic_cloudy;
+    }
+    return -1;
+}
+
+/**
+ * Helper method to provide the art resource id according to the weather condition id returned
+ * by the OpenWeatherMap call.
+ * @param weatherId from OpenWeatherMap API response
+ * @return resource id for the corresponding image. -1 if no relation is found.
+ */
+public static int getArtResourceForWeatherCondition(int weatherId) {
+    // Based on weather code data found at:
+    // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
+    if (weatherId >= 200 && weatherId <= 232) {
+        return R.drawable.art_storm;
+    } else if (weatherId >= 300 && weatherId <= 321) {
+        return R.drawable.art_light_rain;
+    } else if (weatherId >= 500 && weatherId <= 504) {
+        return R.drawable.art_rain;
+    } else if (weatherId == 511) {
+        return R.drawable.art_snow;
+    } else if (weatherId >= 520 && weatherId <= 531) {
+        return R.drawable.art_rain;
+    } else if (weatherId >= 600 && weatherId <= 622) {
+        return R.drawable.art_rain;
+    } else if (weatherId >= 701 && weatherId <= 761) {
+        return R.drawable.art_fog;
+    } else if (weatherId == 761 || weatherId == 781) {
+        return R.drawable.art_storm;
+    } else if (weatherId == 800) {
+        return R.drawable.art_clear;
+    } else if (weatherId == 801) {
+        return R.drawable.art_light_clouds;
+    } else if (weatherId >= 802 && weatherId <= 804) {
+        return R.drawable.art_clouds;
+    }
+    return -1;
+}
+```
+
+
+Hint #1: 
+Make sure the Cursor projection in ForecastFragment and DetailFragment includes WeatherContract.WeatherEntry.COLUMN_WEATHER_ID to retrieve the weather condition ID. You can pass this into the provided helper function to find the weather icon drawable to display in the UI.
+
+
+Hint #2: 
+In ForecastAdapter.bindView() you may need to retrieve the item view type using getItemViewType(cursor.getPosition()).
+```
+@Override
+    public void bindView(View view, Context context, Cursor cursor) {
+
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+        int viewType = getItemViewType(cursor.getPosition());
+        switch (viewType) {
+            case VIEW_TYPE_TODAY: {
+                // Get weather icon
+                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+                break;
+            }
+            case VIEW_TYPE_FUTURE_DAY: {
+                // Get weather icon
+                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+                break;
+            }
+        }
+        ```` 
 
